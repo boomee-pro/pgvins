@@ -3,9 +3,7 @@ import Head from "next/head";
 
 import { parseRequest } from "../../utils/sessions";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   const user = await parseRequest(context.req);
 
   if (user) {
@@ -20,13 +18,13 @@ export const getServerSideProps = async (
   return {
     props: {},
   };
-};
+}
 
 const Login = () => {
   return (
     <>
       <Head>
-        <title>Inscription</title>
+        <title>login</title>
       </Head>
       <h1>Login</h1>
     </>
