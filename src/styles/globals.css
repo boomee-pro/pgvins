@@ -1,16 +1,48 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-}
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap%27");
 
-a {
-  color: inherit;
-  text-decoration: none;
+:root {
+  --blue-main: hsl(232, 38%, 18%);
+  --blue-dark: hsl(250, 16%, 22%);
+  --blue-darker: hsl(335, 10%, 25%);
+  --gold-main: hsl(33, 57%, 47%);
+  --gold-dark: hsl(31, 46%, 40%);
+  --gold-darker: hsl(26, 30%, 33%);
+  --red-main: hsl(348, 95%, 31%);
+  --red-light: hsl(359, 65%, 39%);
+  --red-ligther: hsl(11, 61%, 42%);
+
+  --red-disabled: hsl(348, 45%, 33%);
 }
 
 * {
   box-sizing: border-box;
+  font-family: "DM Serif Text", serif;
+  padding: 0;
+  margin: 0;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+button {
+  /* Reset button style */
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("/back.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  z-index: -1;
 }
