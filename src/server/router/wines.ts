@@ -1,15 +1,6 @@
-import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createRouter } from "./context";
-import { prisma } from "../db/client";
-
-const defaultWineSelect = Prisma.validator<Prisma.WineSelect>()({
-  id: true,
-  name: true,
-  origin: true,
-  price: true,
-});
 
 export const winesRouter = createRouter()
   .mutation("add", {
@@ -18,30 +9,26 @@ export const winesRouter = createRouter()
       origin: z.string().min(1),
       price: z.number().max(10000),
     }),
-    async resolve({ input }) {
-      const wine = await prisma.wine.create({
+    async resolve({ ctx, input }) {
+      const wine = await ctx.prisma.wine.create({
         data: input,
-        select: defaultWineSelect,
       });
       return wine;
     },
   })
   .query("all", {
-    async resolve() {
-      return prisma.wine.findMany({
-        select: defaultWineSelect,
-      });
+    async resolve({ ctx }) {
+      return ctx.prisma.wine.findMany({});
     },
   })
   .query("byId", {
     input: z.object({
       id: z.string(),
     }),
-    async resolve({ input }) {
+    async resolve({ ctx, input }) {
       const { id } = input;
-      const wine = await prisma.wine.findUnique({
+      const wine = await ctx.prisma.wine.findUnique({
         where: { id },
-        select: defaultWineSelect,
       });
       if (!wine) {
         throw new TRPCError({
@@ -61,12 +48,11 @@ export const winesRouter = createRouter()
         price: z.number().max(10000),
       }),
     }),
-    async resolve({ input }) {
+    async resolve({ ctx, input }) {
       const { id, data } = input;
-      const wine = await prisma.wine.update({
+      const wine = await ctx.prisma.wine.update({
         where: { id },
         data,
-        select: defaultWineSelect,
       });
       return wine;
     },
@@ -75,9 +61,9 @@ export const winesRouter = createRouter()
     input: z.object({
       id: z.string(),
     }),
-    async resolve({ input }) {
+    async resolve({ ctx, input }) {
       const { id } = input;
-      await prisma.wine.delete({ where: { id } });
+      await ctx.prisma.wine.delete({ where: { id } });
       return {
         id,
       };

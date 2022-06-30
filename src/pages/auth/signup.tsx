@@ -1,33 +1,52 @@
-import { GetServerSidePropsContext } from "next";
-import Head from "next/head";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { trpc } from "../../utils/trpc";
+import { signIn } from "next-auth/react";
 
-import { parseRequest } from "../../utils/sessions";
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const user = await parseRequest(context.req);
-
-  if (user) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-}
+const schema = z.object({
+  email: z.string().email("Email requise."),
+  password: z.string().min(8, {
+    message: "Le mot de passe doit comporter au minimum 8 caractères",
+  }),
+  surname: z.string().min(1, { message: "Le prénom est requis." }),
+  forename: z.string().min(1, { message: "Le nom est requis." }),
+});
 
 const Signup = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(schema) });
+
+  const signupMutation = trpc.useMutation("auth.signup");
+
+  const onSubmit = (data: z.infer<typeof schema>) => {
+    console.log(JSON.stringify(data));
+    signupMutation.mutate(data);
+    signIn("credentials", {
+      email: data.email,
+      password: data.password,
+    });
+  };
+
   return (
-    <>
-      <Head>
-        <title>login</title>
-      </Head>
-      <h1>Sign-up</h1>
-    </>
+    <form onSubmit={(e) => e.preventDefault()}>
+      <input {...register("email")} />
+      {errors.email && <p>{errors.email.message}</p>}
+
+      <input {...register("forename")} />
+      {errors.forename && <p>{errors.forename.message}</p>}
+
+      <input {...register("surname")} />
+      {errors.surname && <p>{errors.surname.message}</p>}
+
+      <input {...register("password")} />
+      {errors.password && <p>{errors.password.message}</p>}
+
+      <input type="submit" onClick={handleSubmit(onSubmit)} />
+    </form>
   );
 };
 
