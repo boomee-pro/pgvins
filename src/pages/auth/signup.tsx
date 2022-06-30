@@ -1,8 +1,15 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { trpc } from "../../utils/trpc";
 import { signIn } from "next-auth/react";
+import { BiEnvelope, BiLockAlt, BiUser } from "react-icons/bi";
+import Image from "next/image";
+import Head from "next/head";
+import Link from "next/link";
+import Wine from "../../../public/wine2.png";
+
+import styles from "../../styles/auth.module.scss";
+import { trpc } from "../../utils/trpc";
 
 const schema = z.object({
   email: z.string().email("Email requise."),
@@ -32,21 +39,54 @@ const Signup = () => {
   };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      <input {...register("email")} />
-      {errors.email && <p>{errors.email.message}</p>}
+    <section>
+      <Head>
+        <title>Inscription</title>
+      </Head>
+      <div className={styles.auth__container}>
+        <div className={styles.auth__banner}>
+          <Image src={Wine} alt="auth-banner" layout="fill" />
+        </div>
+        <div className={styles.form__container}>
+          <form className={styles.form}>
+            <h2>Inscription</h2>
+            <div>
+              <div className={styles.split__container}>
+                <div className={styles.form__input}>
+                  <BiUser size={24} />
+                  <input placeholder="Prénom" {...register("forename")} />
+                </div>
 
-      <input {...register("forename")} />
-      {errors.forename && <p>{errors.forename.message}</p>}
+                <div className={styles.form__input}>
+                  <BiUser size={24} />
+                  <input placeholder="Nom" {...register("surname")} />
+                </div>
 
-      <input {...register("surname")} />
-      {errors.surname && <p>{errors.surname.message}</p>}
+                <div className={styles.form__input}>
+                  <BiEnvelope size={24} />
+                  <input placeholder="Email" {...register("email")} />
+                </div>
 
-      <input {...register("password")} />
-      {errors.password && <p>{errors.password.message}</p>}
+                <div className={styles.form__input}>
+                  <BiLockAlt size={24} />
+                  <input placeholder="Mot de passe" {...register("password")} />
+                </div>
 
-      <input type="submit" onClick={handleSubmit(onSubmit)} />
-    </form>
+                <input
+                  type="submit"
+                  onClick={handleSubmit((e) => e.preventDefault())}
+                />
+
+                <p>
+                  Vous avez déjà un compte ?{" "}
+                  <Link href="sign-in">Se connecter</Link>
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
   );
 };
 
