@@ -1,14 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+
+import { getByIDSchema, WineSchema } from "../../utils/types";
 import { createRouter } from "./context";
 
 export const winesRouter = createRouter()
   .mutation("add", {
-    input: z.object({
-      name: z.string().min(1),
-      origin: z.string().min(1),
-      price: z.number().max(10000),
-    }),
+    input: WineSchema,
     async resolve({ ctx, input }) {
       const wine = await ctx.prisma.wine.create({
         data: input,
@@ -22,9 +20,7 @@ export const winesRouter = createRouter()
     },
   })
   .query("byId", {
-    input: z.object({
-      id: z.string(),
-    }),
+    input: getByIDSchema,
     async resolve({ ctx, input }) {
       const { id } = input;
       const wine = await ctx.prisma.wine.findUnique({
@@ -42,11 +38,7 @@ export const winesRouter = createRouter()
   .mutation("edit", {
     input: z.object({
       id: z.string(),
-      data: z.object({
-        name: z.string().min(1),
-        origin: z.string().min(1),
-        price: z.number().max(10000),
-      }),
+      data: WineSchema,
     }),
     async resolve({ ctx, input }) {
       const { id, data } = input;
@@ -58,9 +50,7 @@ export const winesRouter = createRouter()
     },
   })
   .mutation("delete", {
-    input: z.object({
-      id: z.string(),
-    }),
+    input: getByIDSchema,
     async resolve({ ctx, input }) {
       const { id } = input;
       await ctx.prisma.wine.delete({ where: { id } });

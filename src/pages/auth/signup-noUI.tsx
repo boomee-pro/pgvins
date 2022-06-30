@@ -1,29 +1,21 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { signIn } from "next-auth/react";
 
+import { registerSchema } from "../../utils/types";
+import type { RegisterData } from "../../utils/types";
 import { trpc } from "../../utils/trpc";
-
-const schema = z.object({
-  email: z.string().email("Email requise."),
-  password: z.string().min(8, {
-    message: "Le mot de passe doit comporter au minimum 8 caractères",
-  }),
-  surname: z.string().min(1, { message: "Le prénom est requis." }),
-  forename: z.string().min(1, { message: "Le nom est requis." }),
-});
 
 const Signup = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(schema) });
+  } = useForm({ resolver: zodResolver(registerSchema) });
 
   const signupMutation = trpc.useMutation("auth.signup");
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
+  const onSubmit = (data: RegisterData) => {
     console.log(JSON.stringify(data));
     signupMutation.mutate(data);
     signIn("credentials", {
@@ -34,17 +26,17 @@ const Signup = () => {
 
   return (
     <form>
+      <ul>
+        {errors.email && <li>{errors.email.message}</li>}
+        {errors.forename && <li>{errors.forename.message}</li>}
+        {errors.surname && <li>{errors.surname.message}</li>}
+        {errors.password && <li>{errors.password.message}</li>}
+      </ul>
+
       <input {...register("email")} />
-      {errors.email && <p>{errors.email.message}</p>}
-
       <input {...register("forename")} />
-      {errors.forename && <p>{errors.forename.message}</p>}
-
       <input {...register("surname")} />
-      {errors.surname && <p>{errors.surname.message}</p>}
-
       <input {...register("password")} />
-      {errors.password && <p>{errors.password.message}</p>}
 
       <input type="submit" onClick={handleSubmit((e) => e.preventDefault())} />
     </form>
