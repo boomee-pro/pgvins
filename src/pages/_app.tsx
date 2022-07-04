@@ -1,14 +1,33 @@
 import { withTRPC } from "@trpc/next";
-import type { AppRouter } from "../server/router";
 import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import { SessionProvider } from "next-auth/react";
+import { useEffect } from "react";
+import LogRocket from "logrocket";
+import setupLogRocketReact from "logrocket-react";
+
 import "../styles/globals.css";
+import type { AppRouter } from "../server/router";
 
 const MyApp: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      // && process.env.NODE_ENV !== "development"
+      session
+    ) {
+      LogRocket.init("nrcsn7/pgvins");
+      LogRocket.identify(session.user.email, {
+        name: session.user.name,
+        email: session.user.email,
+      });
+      setupLogRocketReact(LogRocket);
+    }
+  }, [session]);
+
   return (
     <SessionProvider session={session}>
       <Component {...pageProps} />
