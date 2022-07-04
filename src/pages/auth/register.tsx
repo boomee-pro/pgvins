@@ -2,17 +2,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 
-import { registerSchema } from "../../utils/types";
+import AuthError from "../../component/auth-error";
+import { RegisterSchema } from "../../utils/types";
 import type { RegisterData } from "../../utils/types";
 import { trpc } from "../../utils/trpc";
 
-const Error = ({ msg }: { msg: string }) => {
-  return <small style={{ color: "red" }}>{msg}</small>;
-};
-
 const Signup = () => {
   const signupMutation = trpc.useMutation("auth.signup", {
-    onSuccess(data, variables, context) {
+    onSuccess(data, variables) {
       console.log(JSON.stringify(data));
       signIn("credentials", {
         email: variables.email,
@@ -25,7 +22,7 @@ const Signup = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterData>({ resolver: zodResolver(registerSchema) });
+  } = useForm<RegisterData>({ resolver: zodResolver(RegisterSchema) });
 
   const handleRegistration = (user: RegisterData) => {
     signupMutation.mutate(user);
@@ -36,17 +33,17 @@ const Signup = () => {
       <div>
         <label>Name</label>
         <input type="text" {...register("name")} />
-        {errors?.name && <Error msg={errors.name.message as string} />}
+        {errors?.name && <AuthError msg={errors.name.message} />}
       </div>
       <div>
         <label>Email</label>
         <input type="email" {...register("email")} />
-        {errors?.email && <Error msg={errors.email.message as string} />}
+        {errors?.email && <AuthError msg={errors.email.message} />}
       </div>
       <div>
         <label>Password</label>
         <input type="password" {...register("password")} />
-        {errors?.password && <Error msg={errors.password.message as string} />}
+        {errors?.password && <AuthError msg={errors.password.message} />}
       </div>
       <button>Submit</button>
     </form>

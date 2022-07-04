@@ -13,6 +13,8 @@ const Home: NextPage = () => {
       </Head>
       <h1>Hello world</h1>
       <LoginButton />
+      <br />
+      <Link href="/auth/login">custom login | </Link>
       <Link href="/auth/register">register</Link>
     </>
   );

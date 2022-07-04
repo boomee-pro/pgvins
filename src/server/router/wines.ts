@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { getByIDSchema, WineSchema } from "../../utils/types";
+import { GetByIDSchema, WineSchema } from "../../utils/types";
 import { createRouter } from "./context";
 
 export const winesRouter = createRouter()
@@ -20,7 +20,7 @@ export const winesRouter = createRouter()
     },
   })
   .query("byId", {
-    input: getByIDSchema,
+    input: GetByIDSchema,
     async resolve({ ctx, input }) {
       const { id } = input;
       const wine = await ctx.prisma.wine.findUnique({
@@ -50,7 +50,7 @@ export const winesRouter = createRouter()
     },
   })
   .mutation("delete", {
-    input: getByIDSchema,
+    input: GetByIDSchema,
     async resolve({ ctx, input }) {
       const { id } = input;
       await ctx.prisma.wine.delete({ where: { id } });
