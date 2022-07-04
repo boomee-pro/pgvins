@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import LoginButton from "../component/login-btn";
 
 const Home: NextPage = () => {
@@ -12,6 +13,7 @@ const Home: NextPage = () => {
       </Head>
       <h1>Hello world</h1>
       <LoginButton />
+      <Link href="/auth/register">register</Link>
     </>
   );
 };

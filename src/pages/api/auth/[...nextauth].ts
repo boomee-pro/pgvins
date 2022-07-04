@@ -1,13 +1,13 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import argon2 from "argon2";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 import { prisma } from "../../../server/db/client";
 
 export default NextAuth({
-  theme: {
-    colorScheme: "light",
-  },
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
@@ -15,6 +15,10 @@ export default NextAuth({
   useSecureCookies:
     process.env.NODE_ENV && process.env.NODE_ENV === "production",
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -25,7 +29,7 @@ export default NextAuth({
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.password || !credentials?.email) return null;
 
         const user = await prisma.user.findUnique({
@@ -39,8 +43,7 @@ export default NextAuth({
 
         return {
           id: user.id,
-          surname: user.surname,
-          forename: user.forename,
+          name: user.name,
           email: user.email,
         };
       },
